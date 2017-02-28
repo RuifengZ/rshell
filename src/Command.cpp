@@ -1,5 +1,6 @@
 #include "Command.h"
 
+
 Command::Command(string ucmd, char con){
     connector = con;
     
