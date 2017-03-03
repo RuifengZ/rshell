@@ -6,17 +6,21 @@
 #include <sstream>
 #include <string.h>
 #include <algorithm>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include "Base.h"
 using namespace std;
 
-class Command
+class Command : public Base
 {
-    private:
-    char connector;
     public:
     char* cmdLine[99];
     Command() {};
-    Command(string ucmd, char con);
-    void setLine(string ucmd, char con);
-    char getConnector();
+    Command(string ucmd);
+    void setLine(string ucmd);
+    bool execute();
 };
 #endif
