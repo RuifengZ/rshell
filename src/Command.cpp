@@ -1,8 +1,9 @@
 #include "Command.h"
 
+//constructer, Passes in string command using stringstream
+//pushes the command and flags to char*[] cmdLine for execvp use
 Command::Command(string ucmd){
     
-    //cout << "RECIEVED CMD: " << ucmd << "   RECIEVED CON: " << con << endl;
     string cmd_M, cmd_P;
     istringstream ss(ucmd);
     
@@ -13,22 +14,13 @@ Command::Command(string ucmd){
     int pos = 1;
     while(ss>>cmd_P)
     {
- 
-       // cout << "CMD" << pos<< ": " << cmd_P << endl;
         cmdLine[pos]=strdup(cmd_P.c_str());
-       // cout << "RECORDED: " << cmdLine[pos]<< endl;
-               ++pos;
+       ++pos;
     }
-    
-    
-    // for(int a=0; a<pos; ++a)
-    // {
-    //     cout << "ACTUAL: " << a<< ": " << (cmdLine)[a] << endl;
-    // }
-    
-    //cout << "TEST1: " << ucmd << "|||" << con <<endl;
 }
 
+//a set command to change the current command
+//same as constuctor 
 void Command::setLine(string ucmd){
     fill(cmdLine, cmdLine + 99, (char*)NULL);
     string cmd_M, cmd_P;
@@ -44,9 +36,9 @@ void Command::setLine(string ucmd){
         cmdLine[pos]=(char*)cmd_P.c_str();
         pos++;
     }
-    //cout << "TEST2: " << ucmd << "   " << con <<endl;
 }
 
+//forks and executes cmdLine with execvp
 bool Command::execute()
 {
     int pip[2];
@@ -55,8 +47,7 @@ bool Command::execute()
     pid_t pid = fork();
     if(pid == 0)
     {
-        //cout << "child: " << pid << endl;
-         close(pip[0]); 
+        close(pip[0]); 
         if(execvp(cmdLine[0], cmdLine)==-1)
         {
             perror(cmdLine[0]);
@@ -72,9 +63,6 @@ bool Command::execute()
             perror("wait");
         close(pip[1]);
         read(pip[0], instring, 7);
-
-       // cout << "parent: " << pid << endl;
     }
     return strcmp(instring, "Fail");
-
 }

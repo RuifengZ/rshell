@@ -3,6 +3,7 @@
 
 class Base {
     public:
+    //base class for abstract use
     virtual bool execute() = 0;
 };
 

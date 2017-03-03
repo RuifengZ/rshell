@@ -15,17 +15,15 @@ int main()
     
     while(fullCommands != "exit")
     {
-        // char *userName = getlogin();           
-        // if(!userName) {
-        //     perror("getlogin() error");       
-        // }
+        char *userName = getlogin();           
+        if(!userName) {
+            perror("getlogin() error");       
+        }
 
-        // char hostName[1000];
-        // gethostname(hostName, sizeof hostName);
+        char hostName[1000];
+        gethostname(hostName, sizeof hostName);
 
-        // cout << userName << "@" <<  hostName << "$ ";
-        
-        cout << "$ ";
+        cout << userName << "@" <<  hostName << "$ ";
         
         fullCommands = "";
         getline(cin, fullCommands);

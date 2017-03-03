@@ -22,8 +22,6 @@ class Parse
         int cmdIndex;
     public:
         vector<Base*> cmds;
-        vector<string> tokens;
-
         Parse() : cmdIndex(-1) {};
         void parseCmd(string toParse);
         Base* getCmd();

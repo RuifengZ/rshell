@@ -5,9 +5,10 @@
 
 class And: public Connector {
     public:
-    //constructors
     And(Base* lcmd, Base* rcmd) : Connector(lcmd, rcmd) {};
     And() : Connector() {};
+    
+    //execute logic for bash And
     bool execute(){
         if(lcmd->execute())
         {

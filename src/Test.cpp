@@ -20,9 +20,6 @@ Test::Test(string ucmd){
         flags.push_back(cmd_P);
     }
     
-    // for(unsigned asd=0; asd < flags.size(); ++asd)
-    //     cout << flags.at(asd) << " ";
-    // cout << endl;
 }
 
 bool Test::execute(){

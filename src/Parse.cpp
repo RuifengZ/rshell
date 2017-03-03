@@ -7,111 +7,53 @@ Base* Parse::getCmd(){
 void Parse::parseCmd(string toParse){
     cmdIndex = -1;
     cmds.clear();
-    tokens.clear();
+    stack<string> tokens;
     char str[1024];
-    for(unsigned a=0;a<=toParse.size();a++)
+    
+    for(unsigned a=0;a<=toParse.size();a++) // copy command toParse to a char array
     {
         str[a]=toParse[a];
     }
+    
     char *copy = strdup(str);
-    char *res = strtok( str, ";&|()");
+    char *res = strtok( str, ";&|()"); //seperate str by limiters
     
     while (res) {
-        string cmdName = strdup(res);
+        string cmdName = strdup(res); //read command name
         if(cmdName != " ")
-            tokens.push_back(cmdName);
+            tokens.push(cmdName);       //push to tokens for prefix conversion
         if(copy[res-str+strlen(res)] == ';')
-            tokens.push_back(";");
+            tokens.push(";");
         else
             if(copy[res-str+strlen(res)] == '|')
-                tokens.push_back("|");
+                tokens.push("|");
             else
                 if(copy[res-str+strlen(res)] == '&')
-                    tokens.push_back("&");
+                    tokens.push("&");
                 else
                     if(copy[res-str+strlen(res)] == '(')
-                        tokens.push_back("(");
+                        tokens.push(")");
                     else
                         if(copy[res-str+strlen(res)] == ')')
-                            tokens.push_back(")");
+                            tokens.push("(");
                         else
                             break;
-                
-        //cout << "ADDED: " << cmdName << " and " << copy[res-str+strlen(res)] << endl;
-        
-        // string cmdName = strdup(res);
-        // if(cmds.empty())
-        // {
-        //     if(cmdName.substr(0,4) == "test" || cmdName.substr(0,1) == "[")
-        //         cmds.push_back(new Test(cmdName));
-        //     else
-        //         cmds.push_back(new Command(cmdName));
-        //     cmdIndex++;
-        //     cout << "EMPTY" << endl;
-        // }
-        // else
-        // {
-        //     if(next == ';')
-        //     {
-        //         if(cmdName.substr(0,4) == "test" || cmdName.substr(0,1) == "[")
-        //             cmds.push_back(new Semicolon(getCmd(), new Test(cmdName)));
-        //         else
-        //             cmds.push_back(new Semicolon(getCmd(), new Command(cmdName)));
-        //         cmdIndex++;
-        //         cout << "SEMICOLON" << endl;
-        //     }
-        //     else 
-        //     {
-        //         if (next == '|')
-        //         {
-        //             if(cmdName.substr(0,4) == "test" || cmdName.substr(0,1) == "[")
-        //                 cmds.push_back(new Or(getCmd(), new Test(cmdName)));
-        //             else
-        //                 cmds.push_back(new Or(getCmd(), new Command(cmdName)));
-        //             cmdIndex++;
-        //             cout << "OR" << endl;
-        //         }
-        //         else
-        //         {
-        //             if (next == '&')
-        //             {
-        //                 if(cmdName.substr(0,4) == "test" || cmdName.substr(0,1) == "[")
-        //                     cmds.push_back(new And(getCmd(), new Test(cmdName)));
-        //                 else
-        //                     cmds.push_back(new And(getCmd(), new Command(cmdName)));
-        //                 cmdIndex++;
-        //                 cout << "AND" << endl;
-        //             }
-        //         }
-        //     }
-
-        // }
-        // if(copy[res-str+strlen(res)] == ';')
-        //     next = ';';
-        // else
-        //     if(copy[res-str+strlen(res)] == '|')
-        //         next = '|';
-        //     else
-        //         if(copy[res-str+strlen(res)] == '&')
-        //             next = '&';
-        //         else
-        //             next = '0';
-        
-        //cmds.push_back(new Command(cmdName, copy[res-str+strlen(res)]));
         res = strtok( NULL, ";&|()");
     }
     free(copy);
     
+    //convert the inputed commands to prefix notation 
     queue<string> outQueue;
     stack<string> opStack;
-    for(unsigned z=0; z<tokens.size(); ++z)
+    while(!tokens.empty())
     {
-        //cout << z <<":" << tokens.at(z) << " " << endl;
-        if(tokens.at(z).size() > 1)
+        string read = tokens.top();
+        tokens.pop();
+        if(read.size() > 1)
         {
-            outQueue.push(tokens.at(z));
+            outQueue.push(read);
         }
-        if(tokens.at(z)==")")
+        if(read==")")
         {
             while(opStack.top() != "(")
             {
@@ -122,9 +64,9 @@ void Parse::parseCmd(string toParse){
         }
         else
         {
-            if(tokens.at(z).size() == 1 && tokens.at(z)!=" ")
+            if(read.size() == 1 && read!=" ")
             {
-                opStack.push(tokens.at(z));
+                opStack.push(read);
             }
         }
     }
@@ -134,31 +76,36 @@ void Parse::parseCmd(string toParse){
         opStack.pop();
     }
     
+    
     // while(!outQueue.empty())
     // {
     //     cout << "queue: " << outQueue.front() << endl;
     //     outQueue.pop();
     // }
     
+    
+    //evaluates prefix notation
+    //uses the And, Semicolon, and Or classes as operators with two children
     stack<string> values;
-    while(!outQueue.empty())
+    while(!outQueue.empty()) 
     {   
         string token = outQueue.front();
         outQueue.pop();
-        if(token.size()>1)
+        if(token.size()>1)   //check if operand
             values.push(token);
         else
         {
             if(token.size() == 1)
             {
-                if(cmds.empty())
+                if(cmds.empty()) //check if cmds is initialized
                 {
-                    string cmdName2 = values.top();
+                    string cmdName1 = values.top(); //read operands
                     values.pop();
-                    string cmdName1 = values.top();
+                    string cmdName2 = values.top();
                     values.pop();
                     if(token == ";")
                     {
+                        //extra test cases to determin if command is a test command
                         if((cmdName1.find("test") != string::npos || cmdName1.find("[") != string::npos) && (cmdName2.find("test") != string::npos || cmdName2.find("[") != string::npos))
                             cmds.push_back(new Semicolon(new Test(cmdName1), new Test(cmdName2)));
                         else
@@ -243,7 +190,7 @@ void Parse::parseCmd(string toParse){
                 }
             }
         }
-        if(outQueue.empty() && values.size() == 1)
+        if(outQueue.empty() && values.size() == 1) //check if only one command was entered
         {
             if(values.top().find("test") != string::npos || values.top().find("[") !=  string::npos)
                 cmds.push_back(new Test(values.top()));
