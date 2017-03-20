@@ -17,6 +17,7 @@ class Test: public Base{
 	    vector<string> flags;
         Test() {};
         Test(string ucmd);
-        bool execute();
+        bool execute(int input, int output);
+        void setLine(string newP);
 };
 #endif

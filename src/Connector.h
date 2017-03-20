@@ -13,7 +13,7 @@ class Connector: public Base {
     public:
         Connector(Base* cmd1, Base* cmd2) : lcmd(cmd1), rcmd(cmd2) {};
         Connector() : lcmd(NULL), rcmd(NULL) {};
-    
-        virtual bool execute() = 0;
+        virtual bool execute(int input, int output) = 0;
+        void setLine(string newP) {};
 };
 #endif

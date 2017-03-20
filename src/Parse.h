@@ -13,6 +13,10 @@
 #include "And.h"
 #include "Or.h"
 #include "Semicolon.h"
+#include "Rediro.h"
+#include "Rediri.h"
+#include "Rediroo.h"
+#include "Pipe.h"
 
 using namespace std;
 

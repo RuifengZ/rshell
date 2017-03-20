@@ -8,10 +8,11 @@ Command::Command(string ucmd){
     istringstream ss(ucmd);
     
     ss >> cmd_M;
+    name = cmd_M;
     
     cmdLine[0] = strdup(cmd_M.c_str());
     
-    int pos = 1;
+    pos = 1;
     while(ss>>cmd_P)
     {
         cmdLine[pos]=strdup(cmd_P.c_str());
@@ -22,36 +23,35 @@ Command::Command(string ucmd){
 //a set command to change the current command
 //same as constuctor 
 void Command::setLine(string ucmd){
-    fill(cmdLine, cmdLine + 99, (char*)NULL);
-    string cmd_M, cmd_P;
+    string cmd_P;
     istringstream ss(ucmd);
-    
-    ss >> cmd_M;
-    
-    cmdLine[0] = (char*)cmd_M.c_str();
-    
-    int pos = 1;
+
     while(ss>>cmd_P)
     {
-        cmdLine[pos]=(char*)cmd_P.c_str();
-        pos++;
+        cmdLine[pos]=strdup(cmd_P.c_str());
+       ++pos;
     }
 }
 
 //forks and executes cmdLine with execvp
-bool Command::execute()
+bool Command::execute(int input, int output)
 {
-    int pip[2];
-    char instring[20];
-    pipe(pip);
+    bool error = true;
     pid_t pid = fork();
     if(pid == 0)
     {
-        close(pip[0]); 
+        if(dup2(input,0) == -1) {
+            perror("dup2");
+            return false;
+        }
+        if(dup2(output,1) == -1) {
+            perror("dup2");
+            return false;
+        }
         if(execvp(cmdLine[0], cmdLine)==-1)
         {
+            error = false;
             perror(cmdLine[0]);
-            write(pip[1], "Fail", 7);
             exit(1);
         }
         exit(0);
@@ -59,10 +59,11 @@ bool Command::execute()
     }
     if(pid > 0)
     {
-        if(wait(0) == -1)
-            perror("wait");
-        close(pip[1]);
-        read(pip[0], instring, 7);
+       int status;
+       if(waitpid(pid,&status,0) == -1)
+           perror("wait");
+       if(WEXITSTATUS(status) != 0)
+           error = false;
     }
-    return strcmp(instring, "Fail");
+    return error;
 }

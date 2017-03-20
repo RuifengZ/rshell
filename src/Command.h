@@ -16,15 +16,16 @@ using namespace std;
 
 class Command : public Base
 {
+    private:
+        int pos;
     public:
     //command for execvp
     char* cmdLine[99];
-    
     //constuctors
     Command() {};
     Command(string ucmd);
     
     void setLine(string ucmd);
-    bool execute();
+    bool execute(int input, int output);
 };
 #endif

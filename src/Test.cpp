@@ -1,7 +1,7 @@
 #include "Test.h"
 
 Test::Test(string ucmd){
-    string cmd_M, cmd_P;
+    string cmd_P;
     bool bracket = false;
     if(ucmd.substr(0,1) == "[")
     {
@@ -12,7 +12,7 @@ Test::Test(string ucmd){
     istringstream ss(ucmd);
     
     if(!bracket)
-        ss >> cmd_M;
+        ss >> name;
         
     
     while(ss>>cmd_P)
@@ -22,7 +22,18 @@ Test::Test(string ucmd){
     
 }
 
-bool Test::execute(){
+
+void Test::setLine(string newP){
+    string cmd_P;
+    istringstream ss(newP);
+    while(ss>>cmd_P)
+    {
+        flags.push_back(cmd_P);
+    }
+    
+}
+
+bool Test::execute(int input, int output){
     struct stat buf;
     string flag;
     string path;

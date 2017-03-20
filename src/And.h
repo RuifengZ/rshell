@@ -9,10 +9,10 @@ class And: public Connector {
     And() : Connector() {};
     
     //execute logic for bash And
-    bool execute(){
-        if(lcmd->execute())
+    bool execute(int input, int output){
+        if(lcmd->execute(0,1))
         {
-           if(rcmd->execute())
+           if(rcmd->execute(0,1))
            {
                return true;
            }
